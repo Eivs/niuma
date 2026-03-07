@@ -1,0 +1,52 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  # Ruff - 快速 Python linter 和 formatter
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      # 先运行 formatter
+      - id: ruff-format
+        args: [--diff]
+        stages: [manual]
+      - id: ruff-format
+        stages: [pre-commit]
+      # 再运行 linter
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        stages: [pre-commit]
+
+  # MyPy - 静态类型检查
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - pydantic>=2.0
+          - pydantic-settings>=2.0
+          - types-PyYAML
+          - types-setuptools
+        args: [--ignore-missing-imports]
+
+  # 通用文件检查
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: check-docstring-first
+
+  # 拼写检查
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.3.0
+    hooks:
+      - id: codespell
+        args: [--write-changes]
+        exclude: ^(uv\.lock|\.git/|__pycache__/|\.venv/|\.ruff_cache/)
