@@ -22,19 +22,28 @@
 ### 2.1 认知架构 (Cognitive Architecture)
 
 ```mermaid
-flowchart LR
-    subgraph CognitiveLoop["Agent 认知循环"]
-        direction LR
-        Perceive["🎯 感知<br/>Perceive"] --> Think["🧠 思考<br/>Think"]
-        Think --> Act["⚡ 行动<br/>Act"]
-        Act --> Reflect["💭 反思<br/>Reflect"]
-        Reflect --> Perceive
-    end
+flowchart TB
+    %% 环形布局的认知循环
+    Perceive["🎯<br/>感知<br/>Perceive"]
+    Think["🧠<br/>思考<br/>Think"]
+    Act["⚡<br/>行动<br/>Act"]
+    Reflect["💭<br/>反思<br/>Reflect"]
 
-    style Perceive fill:#e1f5fe
-    style Think fill:#f3e5f5
-    style Act fill:#e8f5e9
-    style Reflect fill:#fff3e0
+    Perceive --> Think
+    Think --> Act
+    Act --> Reflect
+    Reflect --> Perceive
+
+    %% 统一的配色方案
+    classDef perceive fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef think fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#6b21a8
+    classDef act fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#166534
+    classDef reflect fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+
+    class Perceive perceive
+    class Think think
+    class Act act
+    class Reflect reflect
 ```
 
 #### 2.1.1 思维链 (Chain-of-Thought)
@@ -51,37 +60,53 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    subgraph Orchestrator["主 Agent (Orchestrator)"]
-        direction TB
-        Coord["负责任务分解与协调"]
+    %% 主 Agent 层
+    Orchestrator["🎯<br/>主 Agent<br/>Orchestrator"]
+
+    %% 执行类 Agent
+    subgraph ExecuteAgents["执行类 Agents"]
+        direction LR
+        Research["🔍<br/>Research"]
+        Code["💻<br/>Code"]
+        Test["🧪<br/>Test"]
+        Review["👁️<br/>Review"]
     end
 
-    subgraph AgentTeam["多智能体协作"]
-        direction TB
-        subgraph Row1["A"]
-            Research["🔍 Research<br/>Agent"]
-            Code["💻 Code<br/>Agent"]
-            Test["🧪 Test<br/>Agent"]
-            Review["👁️ Review<br/>Agent"]
-        end
-
-        subgraph Row2["B"]
-            Plan["📋 Plan<br/>Agent"]
-            Explore["🗺️ Explore<br/>Agent"]
-            Write["✏️ Write<br/>Agent"]
-        end
+    %% 规划类 Agent
+    subgraph PlanAgents["规划类 Agents"]
+        direction LR
+        Plan["📋<br/>Plan"]
+        Explore["🗺️<br/>Explore"]
+        Write["✏️<br/>Write"]
     end
 
-    Orchestrator --> AgentTeam
+    %% 连接关系
+    Orchestrator --> Research
+    Orchestrator --> Code
+    Orchestrator --> Test
+    Orchestrator --> Review
+    Orchestrator --> Plan
+    Orchestrator --> Explore
+    Orchestrator --> Write
 
-    style Orchestrator fill:#e3f2fd
-    style Research fill:#f3e5f5
-    style Code fill:#e8f5e9
-    style Test fill:#fff3e0
-    style Review fill:#fce4ec
-    style Plan fill:#e0f2f1
-    style Explore fill:#f1f8e9
-    style Write fill:#e8eaf6
+    %% 统一的配色方案
+    classDef orchestrator fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef agentResearch fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#6b21a8
+    classDef agentCode fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#166534
+    classDef agentTest fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef agentReview fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#9d174d
+    classDef agentPlan fill:#ccfbf1,stroke:#0d9488,stroke-width:2px,color:#0f766e
+    classDef agentExplore fill:#ecfccb,stroke:#65a30d,stroke-width:2px,color:#3f6212
+    classDef agentWrite fill:#e0e7ff,stroke:#6366f1,stroke-width:2px,color:#4338ca
+
+    class Orchestrator orchestrator
+    class Research agentResearch
+    class Code agentCode
+    class Test agentTest
+    class Review agentReview
+    class Plan agentPlan
+    class Explore agentExplore
+    class Write agentWrite
 ```
 
 #### 2.2.1 团队协议 (Team Protocol)
@@ -194,17 +219,19 @@ stateDiagram-v2
 
     COMPLETED --> [*]
 
-    %% 样式
-    classDef pending fill:#fff3e0
-    classDef inProgress fill:#e3f2fd
-    classDef completed fill:#e8f5e9
-    classDef failed fill:#ffebee
-    classDef blocked fill:#fce4ec
+    %% 统一的配色方案 - 高对比度
+    classDef pending fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef inProgress fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef completed fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#166534
+    classDef failed fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b
+    classDef blocked fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#9d174d
+    classDef retry fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#9a3412
 
     class PENDING pending
     class IN_PROGRESS inProgress
     class COMPLETED completed
-    class FAILED,RETRY failed
+    class FAILED failed
+    class RETRY retry
     class BLOCKED blocked
 ```
 
@@ -218,6 +245,7 @@ stateDiagram-v2
 ```mermaid
 flowchart TB
     subgraph STM["短期记忆 (STM)"]
+        direction TB
         stm1["📋 上下文窗口"]
         stm2["💬 对话历史"]
         stm3["⚡ 工作内存"]
@@ -226,6 +254,7 @@ flowchart TB
     end
 
     subgraph LTM["长期记忆 (LTM)"]
+        direction TB
         ltm1["🔍 向量数据库"]
         ltm2["💾 本地文件存储"]
         ltm3["🕸️ 知识图谱"]
@@ -233,14 +262,21 @@ flowchart TB
         ltm5["🔎 语义检索"]
     end
 
-    MM["🧠 记忆管理器<br/>(统一访问接口)"]
+    MM["🧠<br/>记忆管理器<br/>Memory Manager"]
 
     STM --> MM
     LTM --> MM
 
-    style STM fill:#e3f2fd
-    style LTM fill:#f3e5f5
-    style MM fill:#e8f5e9
+    %% 统一的配色方案
+    classDef stmGroup fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef ltmGroup fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#6b21a8
+    classDef manager fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#166534
+    classDef subItem fill:#f8f9fa,stroke:#6b7280,stroke-width:1px,color:#374151
+
+    class STM stmGroup
+    class LTM ltmGroup
+    class MM manager
+    class stm1,stm2,stm3,stm4,stm5,ltm1,ltm2,ltm3,ltm4,ltm5 subItem
 ```
 
 #### 2.4.1 短期记忆管理
@@ -257,37 +293,41 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    AgentCore["🤖 Agent 核心层"]
-
-    Registry["🔧 工具注册中心<br/>(Registry)"]
+    AgentCore["🤖<br/>Agent 核心层"]
+    Registry["🔧<br/>工具注册中心"]
 
     subgraph Tools["工具分类"]
-        MCPTools["🔗 MCP Tools"]
-        BuiltIn["📦 内置 Tools"]
-        Skills["🎨 自定义 Skills"]
+        direction LR
+        MCPTools["🔗 MCP"]
+        BuiltIn["📦 内置"]
+        Skills["🎨 Skills"]
     end
 
-    subgraph ToolImpl["具体工具实现"]
-        Browser["🌐 Browser API"]
-        FileSys["📁 File System"]
-        Shell["⚡ Shell Exec"]
+    subgraph ToolImpl["工具实现"]
+        direction LR
+        Browser["🌐 Browser"]
+        FileSys["📁 File"]
+        Shell["⚡ Shell"]
     end
 
     AgentCore --> Registry
-    Registry --> MCPTools
-    Registry --> BuiltIn
-    Registry --> Skills
+    Registry --> Tools
+    Tools --> ToolImpl
 
-    MCPTools --> ToolImpl
-    BuiltIn --> ToolImpl
-    Skills --> ToolImpl
+    %% 统一的配色方案
+    classDef core fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef registry fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef mcp fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#6b21a8
+    classDef builtin fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#166534
+    classDef skills fill:#ccfbf1,stroke:#0d9488,stroke-width:2px,color:#0f766e
+    classDef impl fill:#fce7f3,stroke:#db2777,stroke-width:2px,color:#9d174d
 
-    style AgentCore fill:#e3f2fd
-    style Registry fill:#fff3e0
-    style MCPTools fill:#f3e5f5
-    style BuiltIn fill:#e8f5e9
-    style Skills fill:#e0f2f1
-    style ToolImpl fill:#fce4ec
+    class AgentCore core
+    class Registry registry
+    class MCPTools mcp
+    class BuiltIn builtin
+    class Skills skills
+    class Browser,FileSys,Shell impl
 ```
 
 #### 2.5.1 MCP 集成
@@ -309,50 +349,49 @@ flowchart TB
 ```mermaid
 flowchart TB
 
-  subgraph UI["🖥️ 用户界面层 (CLI)"]
-    Parser["命令解析器"]
-    Session["会话管理器"]
-    Renderer["输出渲染器"]
-  end
+    subgraph UI["🖥️ 用户界面层"]
+        direction LR
+        Parser["命令解析"]
+        Session["会话管理"]
+        Renderer["输出渲染"]
+    end
 
-  subgraph Orchestrator["🎯 编排调度层 (Orchestrator)"]
-        Planner["📋 任务规划器<br/>Task Planner"]
-        Factory["🏭 Agent 工厂<br/>Agent Factory"]
-        Coordinator["🎛️ 协调控制器<br/>Coordinator"]
-  end
+    subgraph Orchestrator["🎯 编排调度层"]
+        direction LR
+        Planner["任务规划"]
+        Factory["Agent 工厂"]
+        Coordinator["协调控制"]
+    end
 
-  subgraph Agents["🤖 智能体层"]
-        Master["主 Agent<br/>(Master)"]
-        Agent1["子 Agent 1"]
-        AgentN["子 Agent N"]
-  end
+    subgraph Agents["🤖 智能体层"]
+        direction LR
+        Master["主 Agent"]
+        Workers["工作 Agent 池"]
+    end
 
-  subgraph Infrastructure["🔧 基础设施层"]
-
-    Memory["💾 记忆系统<br/>Memory System"]
-          Tools["🔨 工具系统<br/>Tool System"]
-          Worktree["🌳 Worktree管理<br/>Isolation"]
-
-    MCP["🔗 MCP 客户端"]
-          Queue["📬 任务队列"]
-          Concurrency["⚡ 并发控制器"]
-  end
+    subgraph Infrastructure["🔧 基础设施层"]
+        direction LR
+        Memory["记忆系统"]
+        Tools["工具系统"]
+        Worktree["隔离环境"]
+    end
 
     UI --> Orchestrator
-    Orchestrator -->
+    Orchestrator --> Agents
+    Agents --> Infrastructure
 
-  Master
-    Master --> Agent1
-    Master --> AgentN
-    Agent1 --> Infrastructure
-    AgentN --> Infrastructure
-    Master --> Infrastructure
+    %% 统一的配色方案
+    classDef uiLayer fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef orchLayer fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#6b21a8
+    classDef agentLayer fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#166534
+    classDef infraLayer fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef subNode fill:#f8f9fa,stroke:#6b7280,stroke-width:1px,color:#374151
 
-
-  style UI fill:#e1f5fe
-    style Orchestrator fill:#f3e5f5
-    style Agents fill:#e8f5e9
-    style Infrastructure fill:#fff3e0
+    class UI uiLayer
+    class Orchestrator,Planner,Factory,Coordinator orchLayer
+    class Agents,Master,Workers agentLayer
+    class Infrastructure,Memory,Tools,Worktree infraLayer
+    class Parser,Session,Renderer,Workers subNode
 ```
 
 ### 3.2 核心组件详解
@@ -634,27 +673,36 @@ class TaskScheduler:
 
 ```mermaid
 flowchart TB
-    UserInput["👤 用户输入"] --> Intent["🔍 意图识别 & 分类<br/>(输入理解层)"]
+    UserInput["👤<br/>用户输入"] --> Intent["🔍<br/>意图识别"]
 
-    Intent --> SimpleQuery["📝 简单查询"]
-    Intent --> ComplexTask["🧩 复杂任务"]
+    Intent --> SimpleQuery["📝<br/>简单查询"]
+    Intent --> ComplexTask["🧩<br/>复杂任务"]
 
-    SimpleQuery --> DirectAnswer["✅ 直接回答"]
+    SimpleQuery --> DirectAnswer["✅<br/>直接回答"]
 
-    ComplexTask --> Decompose["🔨 任务分解 (CoT)<br/>生成执行计划"]
-    Decompose --> CreateSub["👥 创建子任务 & Agent<br/>分配执行资源"]
-    CreateSub --> Execute["⚡ 并行/串行执行<br/>子 Agent 协作"]
-    Execute --> Aggregate["📊 结果聚合 & 反思<br/>质量评估"]
-    Aggregate --> Format["📤 输出格式化<br/>记忆更新"]
-    Format --> UserResponse["📢 用户响应"]
+    ComplexTask --> Decompose["🔨<br/>任务分解"]
+    Decompose --> CreateSub["👥<br/>创建子任务"]
+    CreateSub --> Execute["⚡<br/>执行"]
+    Execute --> Reflect["💭<br/>反思评估"]
+    Reflect --> Format["📤<br/>输出格式化"]
+    Format --> UserResponse["📢<br/>用户响应"]
 
     DirectAnswer --> UserResponse
 
-    style UserInput fill:#e1f5fe
-    style Intent fill:#fff3e0
-    style ComplexTask fill:#f3e5f5
-    style Execute fill:#e8f5e9
-    style UserResponse fill:#e1f5fe
+    %% 统一的配色方案
+    classDef inputNode fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af
+    classDef processNode fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#92400e
+    classDef decisionNode fill:#f3e8ff,stroke:#9333ea,stroke-width:2px,color:#6b21a8
+    classDef executeNode fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#166534
+    classDef reflectNode fill:#fff7ed,stroke:#c2410c,stroke-width:2px,color:#9a3412
+    classDef outputNode fill:#ccfbf1,stroke:#0d9488,stroke-width:2px,color:#0f766e
+
+    class UserInput inputNode
+    class Intent,Decompose,CreateSub,Format processNode
+    class SimpleQuery,ComplexTask decisionNode
+    class Execute executeNode
+    class Reflect reflectNode
+    class DirectAnswer,UserResponse outputNode
 ```
 
 ---
