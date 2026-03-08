@@ -5,6 +5,9 @@ from typing import Any
 
 from niuma.core.agent import AgentRole, AgentRuntime
 from niuma.llm.client import LLMClient
+from niuma.utils.logging import get_logger
+
+logger = get_logger("niuma.agents.research")
 
 
 @dataclass

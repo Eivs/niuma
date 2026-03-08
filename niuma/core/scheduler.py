@@ -8,9 +8,12 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from niuma.core.task import Task, TaskResult, TaskStatus
+from niuma.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from niuma.core.agent import Agent
+
+logger = get_logger("niuma.core.scheduler")
 
 
 @dataclass(order=True)

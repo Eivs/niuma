@@ -16,9 +16,12 @@ from niuma.core.background import BackgroundTaskManager
 from niuma.core.messaging import MessageBus, MessagePriority, MessageType
 from niuma.core.task import Task, TaskResult
 from niuma.isolation.worktree import WorktreeManager
+from niuma.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from niuma.core.agent import AgentRuntime
+
+logger = get_logger("niuma.agents.orchestrator")
 
 
 @dataclass

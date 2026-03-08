@@ -11,11 +11,14 @@ from uuid import uuid4
 
 from niuma.core.cognitive import Action, CognitiveCore, Perception, Thought
 from niuma.core.task import Task, TaskResult, TaskStatus
+from niuma.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from niuma.llm.client import LLMClient
     from niuma.memory.manager import MemoryManager
     from niuma.tools.registry import ToolRegistry
+
+logger = get_logger("niuma.core.agent")
 
 
 class AgentState(Enum):

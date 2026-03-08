@@ -15,6 +15,7 @@ from niuma.config import Settings, get_settings, reset_settings
 from niuma.core.agent import AgentRole, AgentRuntime
 from niuma.core.task import Task, TaskResult
 from niuma.llm.client import LLMClient
+from niuma.utils.logging import get_logger, setup_logging
 
 app = typer.Typer(
     name="niuma",
@@ -22,6 +23,7 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 console = Console()
+logger = get_logger("niuma.cli")
 
 
 def version_callback(value: bool) -> None:
@@ -37,7 +39,7 @@ def main(
         bool | None,
         typer.Option("--version", "-v", callback=version_callback, is_eager=True),
     ] = None,
-    config: Annotated[
+    config: Annotated[  # noqa: ARG001
         Path | None,
         typer.Option("--config", "-c", help="Path to config file"),
     ] = None,
@@ -47,11 +49,20 @@ def main(
     ] = False,
 ) -> None:
     """Niuma CLI."""
+    settings = get_settings()
+
     if debug:
-        # Set debug mode
-        settings = get_settings()
         settings.debug = True
         settings.log_level = "DEBUG"
+
+    # Initialize logging
+    setup_logging(
+        level=settings.log_level,
+        log_format=settings.log_format,
+        log_file=settings.log_file,
+        file_format=settings.log_file_format,
+    )
+    logger.debug("Niuma CLI initialized")
 
 
 def print_banner() -> None:
@@ -80,8 +91,8 @@ def check_config() -> bool:
         console.print(
             "[red]Error: No API key configured.[/red]\n"
             "Set one of the following environment variables:\n"
-            "  - LLM_OPENAI_API_KEY\n"
-            "  - LLM_ANTHROPIC_API_KEY"
+            "  - OPENAI_API_KEY\n"
+            "  - ANTHROPIC_API_KEY"
         )
         return False
 
@@ -250,12 +261,16 @@ def config(
         has_anthropic = settings.llm.anthropic_api_key is not None
 
         console.print("[cyan]API Keys:[/cyan]")
-        console.print(f"  OpenAI: {'[green]configured[/green]' if has_openai else '[red]not set[/red]'}")
-        console.print(f"  Anthropic: {'[green]configured[/green]' if has_anthropic else '[red]not set[/red]'}")
+        console.print(
+            f"  OpenAI: {'[green]configured[/green]' if has_openai else '[red]not set[/red]'}"
+        )
+        console.print(
+            f"  Anthropic: {'[green]configured[/green]' if has_anthropic else '[red]not set[/red]'}"
+        )
     else:
         console.print("Use --show to display configuration")
         console.print("\n[dim]Configuration sources:[/dim]")
-        console.print("  1. Environment variables (e.g., LLM_OPENAI_API_KEY)")
+        console.print("  1. Environment variables (e.g., OPENAI_API_KEY)")
         console.print("  2. .env file in current directory")
         console.print("  3. Default values")
 

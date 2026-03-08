@@ -6,11 +6,14 @@ from typing import TYPE_CHECKING
 
 from niuma.core.agent import AgentRole, AgentRuntime
 from niuma.llm.client import LLMClient
+from niuma.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from niuma.memory.manager import MemoryManager
     from niuma.protocol.team import TeamProtocol
     from niuma.tools.registry import ToolRegistry
+
+logger = get_logger("niuma.agents.factory")
 
 
 class AgentFactory:

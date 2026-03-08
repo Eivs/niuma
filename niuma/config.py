@@ -113,6 +113,26 @@ class Settings(BaseSettings):
     )
 
     # =========================================================================
+    # Logging Settings
+    # =========================================================================
+    log_format: Literal["colored", "simple", "json"] = Field(
+        default="colored",
+        description="Console log format",
+    )
+    log_file: str | None = Field(
+        default=None,
+        description="Path to log file (optional)",
+    )
+    log_file_format: Literal["json", "text"] = Field(
+        default="json",
+        description="File log format",
+    )
+    log_enable_rich: bool = Field(
+        default=True,
+        description="Enable rich formatting for console output",
+    )
+
+    # =========================================================================
     # Agent Settings
     # =========================================================================
     agent_max_concurrency: int = Field(
